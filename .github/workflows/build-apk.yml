@@ -1,0 +1,37 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v4
+
+      - name: Extract project ZIP
+        run: |
+          unzip -q daftar-alajwiba-android-github.zip -d extracted
+          cd extracted/daftar-alajwiba-android
+          ls -la
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APK
+        working-directory: extracted/daftar-alajwiba-android
+        run: gradle :app:assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: daftar-alajwiba-apk
+          path: extracted/daftar-alajwiba-android/app/build/outputs/apk/debug/app-debug.apk
